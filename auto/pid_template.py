@@ -3,7 +3,7 @@ import numpy as np
 
 def make_car(desired_v:float=20.0, dt:float=0.1) -> dict:
     """ 
-    Generates a dictionary that holds all the car's values. Keeps track of state varaibles.
+    Generates a dictionary that holds all the car's values. Keeps track of state variables.
     """
     car_state_dictionary : dict[str, float] = {
         "v" : 0, #velocity of your car 
@@ -41,14 +41,17 @@ def update(car: dict, throttle_perc: float, mass: float = 1000, max_throttle_for
 
 
 def calculate_desired_acceleration(car: dict, K_P: float, K_I: float = 0.0, K_D: float = 0.0) -> tuple[float, float]:
-        #input: car["v"], car["desired_v"] (floats)
+        #input: car["v"], car["desired_v"] (floats)2
         #output: desired acceleration and error tuple(float, float)
-        pass # delete this line and write your PID code here
-
+        error = car["desired_v"] - car["v"]
+        desired_acceleration = K_P * error
+        return (desired_acceleration, error)
 
 
 
 def acceleration_to_throttle_percentage(acceleration_desired: float, mass: float = 1000, max_throttle_force: float = 5000) -> float:
         #input: desired_acceleration(float)
         #output: throttle percentage (float, -1 to 1)
-        pass # delete this line and write your code to convert desired acceleration to throttle here
+        acceleration_max = max_throttle_force / mass
+        throttle_percentage = acceleration_desired / acceleration_max
+        return np.clip(throttle_percentage, -1, 1)
