@@ -44,7 +44,17 @@ def calculate_desired_acceleration(car: dict, K_P: float, K_I: float = 0.0, K_D:
         #input: car["v"], car["desired_v"] (floats)2
         #output: desired acceleration and error tuple(float, float)
         error = car["desired_v"] - car["v"]
-        desired_acceleration = K_P * error
+        car["net_integral"] += error * car["dt"]
+
+        if car["error_prev"] is None:
+               de = 0
+        else:
+               de = error - car["error_prev"]
+        car["error_prev"] = error
+
+        error_deriv = de / car["dt"]
+
+        desired_acceleration = (K_P * error) + (K_I * car["net_integral"]) + (K_D * error_deriv)
         return (desired_acceleration, error)
 
 
@@ -55,3 +65,5 @@ def acceleration_to_throttle_percentage(acceleration_desired: float, mass: float
         acceleration_max = max_throttle_force / mass
         throttle_percentage = acceleration_desired / acceleration_max
         return np.clip(throttle_percentage, -1, 1)
+
+# Look at the bottom of run_template
